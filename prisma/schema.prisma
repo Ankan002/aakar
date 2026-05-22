@@ -1,0 +1,70 @@
+generator client {
+    provider = "prisma-client"
+    output   = "../db/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+enum plan_type {
+    free
+    premium
+}
+
+enum workspace_member_role {
+    owner
+    member
+}
+
+model user {
+    id         String             @id @default(ulid())
+    clerk_id   String
+    created_at DateTime           @default(now())
+    updated_at DateTime           @updatedAt
+    workspaces workspace_member[]
+}
+
+model workspace {
+    id         String             @id @default(ulid())
+    name       String
+    slug       String             @unique
+    logo       String
+    plan       plan_type          @default(free)
+    created_at DateTime           @default(now())
+    updated_at DateTime           @updatedAt
+    members    workspace_member[]
+    objects    object[]
+}
+
+model workspace_member {
+    id           String                @id @default(ulid())
+    user_id      String
+    workspace_id String
+    role         workspace_member_role @default(member)
+    created_at   DateTime              @default(now())
+    updated_at   DateTime              @updatedAt
+
+    user      user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    workspace workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+    @@unique([user_id, workspace_id])
+}
+
+model object {
+    id            String   @id @default(ulid())
+    workspace_id  String
+    slug          String
+    name          String
+    singular_name String
+    plural_name   String
+    is_system     Boolean  @default(false)
+    icon          String?
+    color         String?
+    created_at    DateTime @default(now())
+    updated_at    DateTime @updatedAt
+
+    workspace workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+    @@unique([workspace_id, slug])
+}

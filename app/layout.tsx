@@ -33,6 +33,7 @@ export default function RootLayout({
 		<html
 			lang="en"
 			className={`${spaceGrotesk.variable} ${manrope.variable} ${geistMono.variable} antialiased`}
+			suppressHydrationWarning
 		>
 			<body>
 				<ThemeProvider
