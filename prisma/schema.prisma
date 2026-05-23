@@ -68,3 +68,7 @@ model object {
 
     @@unique([workspace_id, slug])
 }
+
+model attribute {
+    id String @id @default(ulid())
+}
